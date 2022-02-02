@@ -31,7 +31,7 @@ func convertCourseDaoToCourse(dao TCourseDao) Types.TCourse {
 
 // MakeTCourseDao 提供MakeTCourseDao接口，如果需要对同一个Course反复操作，可以使用该接口获取Dao类型指针
 func MakeTCourseDao(course Types.TCourse) *TCourseDao {
-	var res *TCourseDao
+	var res *TCourseDao = new(TCourseDao)
 	res.Name = course.Name
 	res.TeacherID = course.TeacherID
 	return res

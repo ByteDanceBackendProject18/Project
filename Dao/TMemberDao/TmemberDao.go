@@ -1,9 +1,9 @@
 package TMemberDao
 
 import (
-	"Project/Dao/DBAccessor"
-	"Project/Types"
 	"fmt"
+	"github.com/ByteDanceBackendProject18/Project/Dao/DBAccessor"
+	"github.com/ByteDanceBackendProject18/Project/Types"
 	"github.com/jinzhu/gorm"
 	"time"
 )
@@ -44,7 +44,7 @@ func makeMemberTable() bool {
 
 // MakeTMemberDao 提供MakeTMemberDao接口，如果需要对同一个member反复操作，可以使用该接口获取Dao类型指针
 func MakeTMemberDao(member Types.TMember) *TMemberDao {
-	var res *TMemberDao
+	var res *TMemberDao = new(TMemberDao)
 	res.UserName = member.UserID
 	res.UserID = member.UserID
 	res.UserType = member.UserType

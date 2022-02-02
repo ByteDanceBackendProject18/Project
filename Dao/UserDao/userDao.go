@@ -1,9 +1,9 @@
 package UserDao
 
 import (
-	"Project/Dao/DBAccessor"
-	"Project/Types"
 	"fmt"
+	"github.com/ByteDanceBackendProject18/Project/Dao/DBAccessor"
+	"github.com/ByteDanceBackendProject18/Project/Types"
 	"github.com/jinzhu/gorm"
 	"time"
 )
