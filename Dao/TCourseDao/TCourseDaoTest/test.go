@@ -4,11 +4,8 @@ package main
 import (
 	"Project1/Dao/TCourseDao"
 	"github.com/ByteDanceBackendProject18/Project/Types"
+	_ "github.com/go-sql-driver/mysql"
 )
-
-type Test struct {
-	a int
-}
 
 func TestInsertCourse() {
 	var course Types.TCourse
@@ -17,5 +14,5 @@ func TestInsertCourse() {
 	TCourseDao.InsertCourse(course)
 }
 func main() {
-	//testInsertCourse()
+
 }
