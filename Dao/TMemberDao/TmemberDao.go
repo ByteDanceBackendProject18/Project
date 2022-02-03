@@ -45,7 +45,7 @@ func makeMemberTable() bool {
 // MakeTMemberDao 提供MakeTMemberDao接口，如果需要对同一个member反复操作，可以使用该接口获取Dao类型指针
 func MakeTMemberDao(member Types.TMember) *TMemberDao {
 	var res *TMemberDao = new(TMemberDao)
-	res.UserName = member.UserID
+	res.UserName = member.Username
 	res.UserID = member.UserID
 	res.UserType = member.UserType
 	res.Nickname = member.Nickname
@@ -136,30 +136,6 @@ func InsertMemberByDao(dao *TMemberDao) {
 	}
 }
 
-// InsertMembersByDao 使用Dao指针批量插入数据
-func InsertMembersByDao(daos []*TMemberDao) {
-	db, err := DBAccessor.MySqlInit()
-	defer func(db *gorm.DB) {
-		_ = db.Close()
-	}(db)
-	if err != nil {
-		fmt.Println(err)
-		fmt.Println("Database connection refused.")
-	} else {
-		// 直到建表成功才继续
-		for true {
-			if makeMemberTable() {
-				break
-			} else {
-				// 如果建表失败，停4s并输出提示信息
-				time.Sleep(time.Duration(4))
-				fmt.Println("Something happened when trying to establish the table--'members'.Please check the database.")
-			}
-		}
-		db.Create(daos)
-	}
-}
-
 // FindMemberByID 根据memberID找到对应的唯一的课程
 func FindMemberByID(id string) (Types.TMember, Types.ErrNo) {
 	var res TMemberDao
@@ -188,7 +164,7 @@ func FindMemberByID(id string) (Types.TMember, Types.ErrNo) {
 	}
 }
 
-// FindMemberByUserName 根据memberID找到对应的唯一的课程
+// FindMemberByUserName 根据member的Username找对应的唯一的课程
 func FindMemberByUserName(name string) (Types.TMember, Types.ErrNo) {
 	var res TMemberDao
 	var res1 Types.TMember

@@ -32,6 +32,7 @@ func convertCourseDaoToCourse(dao TCourseDao) Types.TCourse {
 // MakeTCourseDao 提供MakeTCourseDao接口，如果需要对同一个Course反复操作，可以使用该接口获取Dao类型指针
 func MakeTCourseDao(course Types.TCourse) *TCourseDao {
 	var res *TCourseDao = new(TCourseDao)
+	res.CourseID = course.CourseID
 	res.Name = course.Name
 	res.TeacherID = course.TeacherID
 	return res
@@ -130,30 +131,6 @@ func InsertCourseByDao(dao *TCourseDao) {
 			}
 		}
 		db.Create(dao)
-	}
-}
-
-// InsertCoursesByDao 使用Dao指针添加多门课程
-func InsertCoursesByDao(daos []*TCourseDao) {
-	db, err := DBAccessor.MySqlInit()
-	defer func(db *gorm.DB) {
-		_ = db.Close()
-	}(db)
-	if err != nil {
-		fmt.Println(err)
-		fmt.Println("Database connection refused.")
-	} else {
-		// 直到建表成功才继续
-		for true {
-			if makeCourseTable() {
-				break
-			} else {
-				// 如果建表失败，停4s并输出提示信息
-				time.Sleep(time.Duration(4))
-				fmt.Println("Something happened when trying to establish the table--'courses'.Please check the database.")
-			}
-		}
-		db.Create(daos)
 	}
 }
 
@@ -343,10 +320,7 @@ func UpdateCourseByDao(dao *TCourseDao, course Types.TCourse) Types.ErrNo {
 		if dao.Name == "" {
 			return Types.CourseNotExisted
 		}
-		dao.CourseID = course.CourseID
-		dao.Name = course.Name
-		dao.TeacherID = course.TeacherID
-		db.Model(&dao).Updates(dao)
+		db.Model(dao).Updates(TCourseDao{CourseID: course.CourseID, Name: course.Name, TeacherID: course.TeacherID})
 		return 0
 	}
 }
@@ -374,6 +348,7 @@ func DeleteCourseByID(courseID string) Types.ErrNo {
 		}
 		var res TCourseDao
 		db.Where(&TCourseDao{CourseID: courseID}).Find(&res)
+		fmt.Println(res)
 		if res.Name == "" {
 			return Types.CourseNotExisted
 		}
