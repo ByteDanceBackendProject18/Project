@@ -1,9 +1,9 @@
 package TMemberDao
 
 import (
+	"Project1/Dao/DBAccessor"
+	"Project1/Types"
 	"fmt"
-	"github.com/ByteDanceBackendProject18/Project/Dao/DBAccessor"
-	"github.com/ByteDanceBackendProject18/Project/Types"
 	"github.com/jinzhu/gorm"
 	"time"
 )

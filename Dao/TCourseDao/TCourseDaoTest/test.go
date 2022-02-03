@@ -3,7 +3,6 @@ package main
 
 import (
 	"Project1/Dao/DBAccessor"
-	//"github.com/ByteDanceBackendProject18/Project/Dao/DBAccessor"
 	_ "github.com/go-sql-driver/mysql"
 )
 
