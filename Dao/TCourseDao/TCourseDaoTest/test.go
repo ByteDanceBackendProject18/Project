@@ -3,7 +3,6 @@ package main
 
 import (
 	"Project1/Dao/TCourseDao"
-	"github.com/ByteDanceBackendProject18/Project/Dao/DBAccessor"
 	"github.com/ByteDanceBackendProject18/Project/Types"
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -15,7 +14,5 @@ func TestInsertCourse() {
 	TCourseDao.InsertCourse(course)
 }
 func main() {
-	DBAccessor.MySqlInit()
-	print(1)
-	//TestInsertCourse()
+
 }
