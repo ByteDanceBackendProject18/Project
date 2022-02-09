@@ -7,22 +7,22 @@ import (
 type UserController struct {
 }
 
-func (con UserController) CreateUser(c *gin.Context) {
+func (con UserController) CreateMember(c *gin.Context) {
 
 }
 
-func (con UserController) UpdateUser(c *gin.Context) {
+func (con UserController) UpdateMember(c *gin.Context) {
 
 }
 
-func (con UserController) DeleteUser(c *gin.Context) {
+func (con UserController) DeleteMember(c *gin.Context) {
 
 }
 
-func (con UserController) GetSingleUser(c *gin.Context) {
+func (con UserController) GetMember(c *gin.Context) {
 
 }
 
-func (con UserController) GetUserList(c *gin.Context) {
+func (con UserController) GetMemberList(c *gin.Context) {
 
 }

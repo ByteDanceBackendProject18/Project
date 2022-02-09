@@ -9,11 +9,11 @@ func RegisterRouter(r *gin.Engine) {
 	g := r.Group("/api/v1")
 
 	// 成员管理
-	g.POST("/member/create", Controllers.UserController{}.CreateUser)
-	g.GET("/member", Controllers.UserController{}.GetSingleUser)
-	g.GET("/member/list", Controllers.UserController{}.GetUserList)
-	g.POST("/member/update", Controllers.UserController{}.UpdateUser)
-	g.POST("/member/delete", Controllers.UserController{}.DeleteUser)
+	g.POST("/member/create", Controllers.UserController{}.CreateMember)
+	g.GET("/member", Controllers.UserController{}.GetMember)
+	g.GET("/member/list", Controllers.UserController{}.GetMemberList)
+	g.POST("/member/update", Controllers.UserController{}.UpdateMember)
+	g.POST("/member/delete", Controllers.UserController{}.DeleteMember)
 
 	// 登录
 	g.POST("/auth/login")
