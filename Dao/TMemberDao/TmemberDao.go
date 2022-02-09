@@ -1,8 +1,8 @@
 package TMemberDao
 
 import (
-	"Project1/Dao/DBAccessor"
-	"Project1/Types"
+	"Project/Dao/DBAccessor"
+	"Project/Types"
 	"fmt"
 	"github.com/jinzhu/gorm"
 	"time"

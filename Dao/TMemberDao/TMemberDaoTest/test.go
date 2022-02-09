@@ -3,8 +3,8 @@ package TMemberDaoTest
 //package main
 
 import (
-	"Project1/Dao/TMemberDao"
-	"Project1/Types"
+	"Project/Dao/TMemberDao"
+	"Project/Types"
 	"fmt"
 )
 

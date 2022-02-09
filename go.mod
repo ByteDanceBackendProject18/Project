@@ -1,9 +1,10 @@
-module Project1
+module Project
 
 go 1.13
 
 require (
 	github.com/ByteDanceBackendProject18/Project v0.0.0-20220203084856-34aaa753e3e0
+	github.com/GUAIK-ORG/go-snowflake v0.0.0-20200116064823-220c4260e85f // indirect
 	github.com/gin-gonic/gin v1.7.7 // indirect
 	github.com/go-playground/validator/v10 v10.10.0 // indirect
 	github.com/go-sql-driver/mysql v1.6.0
@@ -12,6 +13,7 @@ require (
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
+	github.com/satori/go.uuid v1.2.0 // indirect
 	github.com/ugorji/go v1.2.6 // indirect
 	golang.org/x/crypto v0.0.0-20220208050332-20e1d8d225ab // indirect
 	golang.org/x/sys v0.0.0-20220207234003-57398862261d // indirect

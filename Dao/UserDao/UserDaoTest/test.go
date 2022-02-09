@@ -1,7 +1,7 @@
 package UserDaoTest
 
 import (
-	"Project1/Dao/UserDao"
+	"Project/Dao/UserDao"
 	"fmt"
 )
 

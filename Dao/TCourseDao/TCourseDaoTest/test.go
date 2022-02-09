@@ -3,8 +3,8 @@ package TCourseDaoTest
 //package main
 
 import (
-	"Project1/Dao/TCourseDao"
-	"Project1/Types"
+	"Project/Dao/TCourseDao"
+	"Project/Types"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 )

@@ -1,8 +1,8 @@
 package TCourseDao
 
 import (
-	"Project1/Dao/DBAccessor"
-	"Project1/Types"
+	"Project/Dao/DBAccessor"
+	"Project/Types"
 	"fmt"
 	"github.com/jinzhu/gorm"
 	"time"
@@ -390,8 +390,8 @@ func DeleteCoursesByName(courseName string) Types.ErrNo {
 	}
 }
 
-// UnsafeDeleteCurses 将满足任一条件的Courses从数据库中软删除
-func UnsafeDeleteCurses(courseID string, courseName string, teacherID string) Types.ErrNo {
+// UnsafeDeleteCourses 将满足任一条件的Courses从数据库中软删除
+func UnsafeDeleteCourses(courseID string, courseName string, teacherID string) Types.ErrNo {
 	db, err := DBAccessor.MySqlInit()
 	defer func(db *gorm.DB) {
 		_ = db.Close()
