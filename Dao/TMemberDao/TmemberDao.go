@@ -160,7 +160,11 @@ func FindMemberByID(id string) (Types.TMember, Types.ErrNo) {
 			}
 		}
 		db.Where(&TMemberDao{UserID: id}).Find(&res)
-		return convertMemberDaoToMember(res), Types.OK
+		member := convertMemberDaoToMember(res)
+		if member.UserType == 0 {
+			return member, Types.UserHasDeleted
+		}
+		return member, Types.OK
 	}
 }
 

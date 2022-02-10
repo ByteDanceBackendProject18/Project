@@ -7,7 +7,7 @@ import (
 )
 
 func MySqlInit() (*gorm.DB, error) {
-	dsn := "root:123456@tcp(127.0.0.1:3306)/Project1?charset=utf8mb4&parseTime=True&loc=Local"
+	dsn := "root:bytedancecamp@tcp(127.0.0.1:3306)/camp?charset=utf8mb4&parseTime=True&loc=Local"
 	db, err := gorm.Open("mysql", dsn)
 	if err != nil {
 		fmt.Println(err)

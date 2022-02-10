@@ -69,7 +69,7 @@ type CreateMemberRequest struct {
 	Nickname string   // required，不小于 4 位 不超过 20 位
 	Username string   // required，只支持大小写，长度不小于 8 位 不超过 20 位
 	Password string   // required，同时包括大小写、数字，长度不少于 8 位 不超过 20 位
-	UserType UserType // required, 枚举值
+	UserType UserType `json:"UserType"` // required, 枚举值
 }
 
 type CreateMemberResponse struct {
@@ -82,7 +82,7 @@ type CreateMemberResponse struct {
 // 获取成员信息
 
 type GetMemberRequest struct {
-	UserID string
+	UserID string `form:"UserID"`
 }
 
 // 如果用户已删除请返回已删除状态码，不存在请返回不存在状态码
