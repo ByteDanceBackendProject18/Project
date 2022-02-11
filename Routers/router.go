@@ -2,11 +2,14 @@ package Routers
 
 import (
 	"Project/Controllers"
+	"Project/Dao/TCourseDao/TCourseDaoTest"
 	"github.com/gin-gonic/gin"
 )
 
 func RegisterRouter(r *gin.Engine) {
 	g := r.Group("/api/v1")
+
+	//使用session
 
 	// 成员管理
 	g.POST("/member/create", Controllers.UserController{}.CreateMember)
@@ -32,4 +35,6 @@ func RegisterRouter(r *gin.Engine) {
 	// 抢课
 	g.POST("/student/book_course")
 	g.GET("/student/course")
+
+	g.GET("/test", TCourseDaoTest.TCourseDaoTest{}.Test)
 }

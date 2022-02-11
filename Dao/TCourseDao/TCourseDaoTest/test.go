@@ -6,8 +6,13 @@ import (
 	"Project/Dao/TCourseDao"
 	"Project/Types"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
+	"net/http"
 )
+
+type TCourseDaoTest struct {
+}
 
 var courseID = "0001"
 var courseName = "Goland Backend"
@@ -61,15 +66,17 @@ func TestInsertCourses() {
 	courses = append(courses, newCourse)
 	TCourseDao.InsertCourses(courses)
 }
-func main() {
-	//TestInsertCourse() //test successfully
-	//TestDeleteCourseByID() //test successfully
-	//TestDeleteCourseByName() //test successfully
-	//TestUpdateCourseByID() //test successfully
-	//fmt.Println(TestUpdateTeacherIDOfCourse()) //test successfully
-	//TestFindCourseByID() //test successfully
-	//TestFindCourseByTeacherID()//test successfully
-	//TestFindCoursesByName()//test successfully
-	//TestDao()//test successfully
-	//TestInsertCourses()//test successfully
+func (t TCourseDaoTest) Test(c *gin.Context) {
+	TestInsertCourse()                         //test successfully
+	TestDeleteCourseByID()                     //test successfully
+	TestDeleteCourseByName()                   //test successfully
+	TestUpdateCourseByID()                     //test successfully
+	fmt.Println(TestUpdateTeacherIDOfCourse()) //test successfully
+	TestFindCourseByID()                       //test successfully
+	TestFindCourseByTeacherID()                //test successfully
+	TestFindCoursesByName()                    //test successfully
+	TestDao()                                  //test successfully
+	TestInsertCourses()                        //test successfully
+
+	c.JSON(http.StatusOK, gin.H{})
 }

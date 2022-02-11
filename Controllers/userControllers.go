@@ -3,11 +3,11 @@ package Controllers
 import (
 	"Project/Dao/TMemberDao"
 	"Project/Dao/UserDao"
+	"Project/Service/UserService"
 	"Project/Types"
 	"github.com/GUAIK-ORG/go-snowflake/snowflake"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"regexp"
 	"strconv"
 )
 
@@ -33,7 +33,7 @@ func (con UserController) CreateMember(c *gin.Context) {
 		return
 	}
 
-	if !check(4, 20, createMemberRequest.Nickname) || !check(8, 20, createMemberRequest.Username) || !checkPassword(8, 20, createMemberRequest.Password) {
+	if !UserService.CheckNickName(createMemberRequest.Nickname) || !UserService.CheckUserName(createMemberRequest.Username) || !UserService.CheckPassword(createMemberRequest.Password) {
 		createMemberResponse.Code = Types.ParamInvalid
 		createMemberResponse.Data = struct{ UserID string }{UserID: string(0)}
 		c.JSON(http.StatusOK, createMemberResponse)
@@ -47,7 +47,7 @@ func (con UserController) CreateMember(c *gin.Context) {
 		return
 	}
 
-	if createMemberRequest.UserType != Types.Admin && createMemberRequest.UserType != Types.Student && createMemberRequest.UserType != Types.Teacher {
+	if UserService.CheckUserType(createMemberRequest.UserType) {
 		createMemberResponse.Code = Types.ParamInvalid
 		createMemberResponse.Data = struct{ UserID string }{UserID: string(0)}
 		c.JSON(http.StatusOK, createMemberResponse)
@@ -153,31 +153,4 @@ func (con UserController) GetMemberList(c *gin.Context) {
 	//}
 	//
 	//
-}
-
-func checkPassword(minLength, maxLength int, pwd string) bool {
-	if len(pwd) < minLength || len(pwd) > maxLength {
-		return false
-	}
-
-	level := 0
-	patternList := []string{`[0-9]+`, `[a-z]+`, `[A-Z]+`}
-	for _, pattern := range patternList {
-		match, _ := regexp.MatchString(pattern, pwd)
-		if match {
-			level++
-		}
-	}
-	if level == 3 {
-		return true
-	}
-	return false
-}
-
-func check(minLength, maxLength int, pwd string) bool {
-	if len(pwd) < minLength || len(pwd) > maxLength {
-		return false
-	}
-
-	return true
 }

@@ -65,6 +65,9 @@ func (con AuthController) WhoAmI(c *gin.Context) {
 	if member, e := TMemberDao.FindMemberByUserName(cookie.Value); e == Types.OK {
 		whoAmIResponse.Code = Types.OK
 		whoAmIResponse.Data = member
+	} else {
+		whoAmIResponse.Code = Types.OK
+		whoAmIResponse.Data = member
 	}
 
 	c.JSON(http.StatusOK, whoAmIResponse)
