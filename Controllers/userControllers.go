@@ -144,13 +144,16 @@ func (con UserController) GetMember(c *gin.Context) {
 }
 
 func (con UserController) GetMemberList(c *gin.Context) {
-	//getMemberListRequest := Types.GetMemberListRequest{}
-	//getMemberListResponse := Types.GetMemberListResponse{}
-	//
-	//if err := c.ShouldBindQuery(&getMemberListRequest); err != nil {
-	//	c.JSON(http.StatusOK, gin.H{"error": err.Error()})
-	//	return
-	//}
-	//
-	//
+	getMemberListRequest := Types.GetMemberListRequest{}
+	getMemberListResponse := Types.GetMemberListResponse{}
+
+	if err := c.ShouldBindQuery(&getMemberListRequest); err != nil {
+		c.JSON(http.StatusOK, gin.H{"error": err.Error()})
+		return
+	}
+	memberList, e := TMemberDao.GetMemberList(getMemberListRequest.Offset, getMemberListRequest.Limit)
+
+	getMemberListResponse.Code = e
+	getMemberListResponse.Data = struct{ MemberList []Types.TMember }{MemberList: memberList}
+	c.JSON(http.StatusOK, getMemberListResponse)
 }

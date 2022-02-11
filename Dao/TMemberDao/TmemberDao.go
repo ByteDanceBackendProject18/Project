@@ -481,7 +481,7 @@ func TellMemberExistedBefore(name string) Types.ErrNo {
 
 // GetMemberList 从起始id——offset开始查看往后limit个数据直至查询不到
 func GetMemberList(offset int, limit int) ([]Types.TMember, Types.ErrNo) {
-	var res TMemberDao
+	var res []TMemberDao
 	var res1 = make([]Types.TMember, limit, limit)
 	db, err := DBAccessor.MySqlInit()
 	defer func(db *gorm.DB) {
@@ -502,19 +502,9 @@ func GetMemberList(offset int, limit int) ([]Types.TMember, Types.ErrNo) {
 				fmt.Println("Something happened when trying to establish the table--'members'.Please check the database.")
 			}
 		}
-		cnt := 0
-		for true {
-			if cnt >= limit {
-				break
-			}
-			db.Unscoped().Where("id = ?", offset).Find(&res)
-			if res.UserName == "" {
-				break
-			} else {
-				cnt++
-				offset++
-				res1 = append(res1, convertMemberDaoToMember(res))
-			}
+		db.Limit(limit).Offset(offset).Order("id").Find(&res)
+		for key, _ := range res {
+			res1[key] = convertMemberDaoToMember(res[key])
 		}
 		return res1, Types.OK
 	}
