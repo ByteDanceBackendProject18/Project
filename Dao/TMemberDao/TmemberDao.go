@@ -160,7 +160,11 @@ func FindMemberByID(id string) (Types.TMember, Types.ErrNo) {
 			}
 		}
 		db.Where(&TMemberDao{UserID: id}).Find(&res)
-		return convertMemberDaoToMember(res), Types.OK
+		res1 = convertMemberDaoToMember(res)
+		if res1.Username == "" {
+			return res1, Types.UserNotExisted
+		}
+		return res1, Types.OK
 	}
 }
 
@@ -188,11 +192,15 @@ func FindMemberByUserName(name string) (Types.TMember, Types.ErrNo) {
 			}
 		}
 		db.Where(&TMemberDao{UserName: name}).Find(&res)
-		return convertMemberDaoToMember(res), Types.OK
+		res1 = convertMemberDaoToMember(res)
+		if res1.Username == "" {
+			return res1, Types.UserNotExisted
+		}
+		return res1, Types.OK
 	}
 }
 
-// FindMemberByNickName 根据memberID找到对应的唯一的课程
+// FindMemberByNickName 根据UserType找到对应的的课程
 func FindMemberByNickName(name string) ([]Types.TMember, Types.ErrNo) {
 	var res []TMemberDao
 	var res1 []Types.TMember
@@ -216,6 +224,9 @@ func FindMemberByNickName(name string) ([]Types.TMember, Types.ErrNo) {
 			}
 		}
 		db.Where(&TMemberDao{UserName: name}).Find(&res)
+		if len(res) == 0 {
+			return res1, Types.UserNotExisted
+		}
 		for _, i := range res {
 			res1 = append(res1, convertMemberDaoToMember(i))
 		}
@@ -223,7 +234,7 @@ func FindMemberByNickName(name string) ([]Types.TMember, Types.ErrNo) {
 	}
 }
 
-// FindMemberByUserType 根据memberID找到对应的唯一的课程
+// FindMemberByUserType 根据UserType找到对应的的课程
 func FindMemberByUserType(usertype Types.UserType) ([]Types.TMember, Types.ErrNo) {
 	var res []TMemberDao
 	var res1 []Types.TMember
@@ -247,6 +258,9 @@ func FindMemberByUserType(usertype Types.UserType) ([]Types.TMember, Types.ErrNo
 			}
 		}
 		db.Where(&TMemberDao{UserType: usertype}).Find(&res)
+		if len(res) == 0 {
+			return res1, Types.UserNotExisted
+		}
 		for _, i := range res {
 			res1 = append(res1, convertMemberDaoToMember(i))
 		}
@@ -254,7 +268,7 @@ func FindMemberByUserType(usertype Types.UserType) ([]Types.TMember, Types.ErrNo
 	}
 }
 
-// UpdateNickNameByName 根据UserName更新
+// UpdateNickNameByName 根据UserName更新Nickname
 func UpdateNickNameByName(name string, nickname string) Types.ErrNo {
 	var res TMemberDao
 	db, err := DBAccessor.MySqlInit()
@@ -286,7 +300,7 @@ func UpdateNickNameByName(name string, nickname string) Types.ErrNo {
 	}
 }
 
-// UpdateNickNameByID 根据UserID更新
+// UpdateNickNameByID 根据UserID更新NickName
 func UpdateNickNameByID(userid string, nickname string) Types.ErrNo {
 	var res TMemberDao
 	db, err := DBAccessor.MySqlInit()
@@ -318,7 +332,7 @@ func UpdateNickNameByID(userid string, nickname string) Types.ErrNo {
 	}
 }
 
-// UpdateNickNameByDao 根据Dao指针更新
+// UpdateNickNameByDao 根据Dao指针更新NickName
 func UpdateNickNameByDao(dao *TMemberDao, nickname string) Types.ErrNo {
 	db, err := DBAccessor.MySqlInit()
 	defer func(db *gorm.DB) {
@@ -430,5 +444,115 @@ func DeleteMemberByDao(dao *TMemberDao) Types.ErrNo {
 		}
 		db.Delete(dao)
 		return 0
+	}
+}
+
+// TellMemberExistedBefore 判断UserName是否曾经存在过
+func TellMemberExistedBefore(name string) Types.ErrNo {
+	var res TMemberDao
+	var res1 Types.TMember
+	db, err := DBAccessor.MySqlInit()
+	defer func(db *gorm.DB) {
+		_ = db.Close()
+	}(db)
+	if err != nil {
+		fmt.Println(err)
+		fmt.Println("Database connection refused.")
+		return Types.UnknownError
+	} else {
+		// 直到建表成功才继续
+		for true {
+			if makeMemberTable() {
+				break
+			} else {
+				// 如果建表失败，停4s并输出提示信息
+				time.Sleep(time.Duration(4))
+				fmt.Println("Something happened when trying to establish the table--'members'.Please check the database.")
+			}
+		}
+		db.Unscoped().Where(&TMemberDao{UserName: name}).Find(&res)
+		res1 = convertMemberDaoToMember(res)
+		if res1.Username == "" {
+			return Types.UserNotExisted
+		}
+		return Types.OK
+	}
+}
+
+// GetMemberList 从起始id——offset开始查看往后limit个数据直至查询不到
+func GetMemberList(offset int, limit int) ([]Types.TMember, Types.ErrNo) {
+	var res TMemberDao
+	var res1 = make([]Types.TMember, limit, limit)
+	db, err := DBAccessor.MySqlInit()
+	defer func(db *gorm.DB) {
+		_ = db.Close()
+	}(db)
+	if err != nil {
+		fmt.Println(err)
+		fmt.Println("Database connection refused.")
+		return res1, Types.UnknownError
+	} else {
+		// 直到建表成功才继续
+		for true {
+			if makeMemberTable() {
+				break
+			} else {
+				// 如果建表失败，停4s并输出提示信息
+				time.Sleep(time.Duration(4))
+				fmt.Println("Something happened when trying to establish the table--'members'.Please check the database.")
+			}
+		}
+		cnt := 0
+		for true {
+			if cnt >= limit {
+				break
+			}
+			db.Unscoped().Where("id = ?", offset).Find(&res)
+			if res.UserName == "" {
+				break
+			} else {
+				cnt++
+				offset++
+				res1 = append(res1, convertMemberDaoToMember(res))
+			}
+		}
+		return res1, Types.OK
+	}
+}
+
+// GetAllMemberList 返回数据库中所有的信息
+func GetAllMemberList() ([]Types.TMember, Types.ErrNo) {
+	var res TMemberDao
+	var res1 = make([]Types.TMember, 10, 10)
+	db, err := DBAccessor.MySqlInit()
+	defer func(db *gorm.DB) {
+		_ = db.Close()
+	}(db)
+	if err != nil {
+		fmt.Println(err)
+		fmt.Println("Database connection refused.")
+		return res1, Types.UnknownError
+	} else {
+		// 直到建表成功才继续
+		for true {
+			if makeMemberTable() {
+				break
+			} else {
+				// 如果建表失败，停4s并输出提示信息
+				time.Sleep(time.Duration(4))
+				fmt.Println("Something happened when trying to establish the table--'members'.Please check the database.")
+			}
+		}
+		var offset int = 0
+		for true {
+			db.Unscoped().Where("id = ?", offset).Find(&res)
+			if res.UserName == "" {
+				break
+			} else {
+				offset++
+				res1 = append(res1, convertMemberDaoToMember(res))
+			}
+		}
+		return res1, Types.OK
 	}
 }
