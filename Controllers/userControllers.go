@@ -35,7 +35,7 @@ func (con UserController) CreateMember(c *gin.Context) {
 
 	if !UserService.CheckNickName(createMemberRequest.Nickname) || !UserService.CheckUserName(createMemberRequest.Username) || !UserService.CheckPassword(createMemberRequest.Password) {
 		createMemberResponse.Code = Types.ParamInvalid
-		createMemberResponse.Data = struct{ UserID string }{UserID: string(0)}
+		createMemberResponse.Data = struct{ UserID string }{UserID: strconv.Itoa(0)}
 		c.JSON(http.StatusOK, createMemberResponse)
 		return
 	}
@@ -49,7 +49,7 @@ func (con UserController) CreateMember(c *gin.Context) {
 
 	if UserService.CheckUserType(createMemberRequest.UserType) {
 		createMemberResponse.Code = Types.ParamInvalid
-		createMemberResponse.Data = struct{ UserID string }{UserID: string(0)}
+		createMemberResponse.Data = struct{ UserID string }{UserID: strconv.Itoa(0)}
 		c.JSON(http.StatusOK, createMemberResponse)
 		return
 	}
