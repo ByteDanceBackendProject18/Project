@@ -292,6 +292,39 @@ func UnsafeUpdateCourseByID(courseID string, course Types.TCourse) Types.ErrNo {
 		return 0
 	}
 }
+func UnbindCourseByTeacherID(teacherID string) Types.ErrNo {
+	db, err := DBAccessor.MySqlInit()
+	defer func(db *gorm.DB) {
+		_ = db.Close()
+	}(db)
+	if err != nil {
+		fmt.Println(err)
+		fmt.Println("Database connection refused.")
+		return Types.UnknownError
+	} else {
+		// 直到建表成功才继续
+		for true {
+			if makeCourseTable() {
+				break
+			} else {
+				// 如果建表失败，停4s并输出提示信息
+				time.Sleep(time.Duration(4))
+				fmt.Println("Something happened when trying to establish the table--'courses'.Please check the database.")
+			}
+		}
+		var res TCourseDao
+		db.Where(&TCourseDao{TeacherID: teacherID}).Find(&res)
+		if res.Name == "" {
+			return Types.CourseNotExisted
+		}
+		if res.TeacherID == "" {
+			return Types.CourseNotBind
+		}
+		res.TeacherID = ""
+		db.Model(&res).Updates(res)
+		return Types.OK
+	}
+}
 
 // UpdateCourseByDao 根据Dao指针更新对应课程的信息(对是否已经绑定做检查)
 func UpdateCourseByDao(dao *TCourseDao, course Types.TCourse) Types.ErrNo {
