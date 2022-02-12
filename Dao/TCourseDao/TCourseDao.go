@@ -4,8 +4,9 @@ import (
 	"Project1/Dao/DBAccessor"
 	"Project1/Types"
 	"fmt"
-	"github.com/jinzhu/gorm"
 	"time"
+
+	"github.com/jinzhu/gorm"
 )
 
 type TCourseDao struct {
@@ -259,6 +260,78 @@ func UpdateTeacherIDOfCourse(courseId string, teacherID string) Types.ErrNo {
 	}
 }
 
+// UnbindTeacherIDOfCourse 将ID对应的course的执教教师ID解绑(检查teacherID是否正确)
+func UnbindTeacherIDOfCourse(courseId string, teacherID string) Types.ErrNo {
+	db, err := DBAccessor.MySqlInit()
+	defer func(db *gorm.DB) {
+		_ = db.Close()
+	}(db)
+	if err != nil {
+		fmt.Println(err)
+		fmt.Println("Database connection refused.")
+		return Types.UnknownError
+	} else {
+		// 直到建表成功才继续
+		for true {
+			if makeCourseTable() {
+				break
+			} else {
+				// 如果建表失败，停4s并输出提示信息
+				time.Sleep(time.Duration(4))
+				fmt.Println("Something happened when trying to establish the table--'courses'.Please check the database.")
+			}
+		}
+		var res TCourseDao
+		db.Where(&TCourseDao{CourseID: courseId}).Find(&res)
+		if res.Name == "" {
+			return Types.CourseNotExisted
+		}
+		if res.TeacherID == "" {
+			return Types.CourseHasBound
+		}
+		// 如果这个课程的教师ID与传入参数不符返回已绑定
+		if res.TeacherID != teacherID {
+			return Types.CourseHasBound
+		}
+		res.TeacherID = ""
+		db.Model(&res).Updates(res)
+		return Types.OK
+	}
+}
+// UnsafeUnbindTeacherIDOfCourse 将ID对应的course的执教教师ID解绑
+func UnsafeUnbindTeacherIDOfCourse(courseId string) Types.ErrNo {
+	db, err := DBAccessor.MySqlInit()
+	defer func(db *gorm.DB) {
+		_ = db.Close()
+	}(db)
+	if err != nil {
+		fmt.Println(err)
+		fmt.Println("Database connection refused.")
+		return Types.UnknownError
+	} else {
+		// 直到建表成功才继续
+		for true {
+			if makeCourseTable() {
+				break
+			} else {
+				// 如果建表失败，停4s并输出提示信息
+				time.Sleep(time.Duration(4))
+				fmt.Println("Something happened when trying to establish the table--'courses'.Please check the database.")
+			}
+		}
+		var res TCourseDao
+		db.Where(&TCourseDao{CourseID: courseId}).Find(&res)
+		if res.Name == "" {
+			return Types.CourseNotExisted
+		}
+		if res.TeacherID == "" {
+			return Types.CourseHasBound
+		}
+		res.TeacherID = ""
+		db.Model(&res).Updates(res)
+		return Types.OK
+	}
+}
 // UnsafeUpdateCourseByID 根据CourseID更新对应课程的信息(不对是否已经绑定做检查)
 func UnsafeUpdateCourseByID(courseID string, course Types.TCourse) Types.ErrNo {
 	db, err := DBAccessor.MySqlInit()
@@ -292,6 +365,8 @@ func UnsafeUpdateCourseByID(courseID string, course Types.TCourse) Types.ErrNo {
 		return 0
 	}
 }
+
+// UnbindCourseByTeacherID 解绑这个老师的所有课程（只解绑一个课程参考其他Unbind函数）
 func UnbindCourseByTeacherID(teacherID string) Types.ErrNo {
 	db, err := DBAccessor.MySqlInit()
 	defer func(db *gorm.DB) {
