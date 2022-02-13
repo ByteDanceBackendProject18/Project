@@ -24,12 +24,12 @@ func RegisterRouter(r *gin.Engine) {
 	g.GET("/auth/whoami", Controllers.AuthController{}.WhoAmI)
 
 	// 排课
-	g.POST("/course/create")
-	g.GET("/course/get")
+	g.POST("/course/create", Controllers.CourseController{}.CreateCourse)
+	g.GET("/course/get", Controllers.CourseController{}.GetOneCourse)
 
-	g.POST("/teacher/bind_course")
-	g.POST("/teacher/unbind_course")
-	g.GET("/teacher/get_course")
+	g.POST("/teacher/bind_course", Controllers.CourseController{}.BindCourse)
+	g.POST("/teacher/unbind_course", Controllers.CourseController{}.UnBindCourse)
+	g.GET("/teacher/get_course", Controllers.CourseController{}.GetTeacherCourse)
 	g.POST("/course/schedule")
 
 	// 抢课

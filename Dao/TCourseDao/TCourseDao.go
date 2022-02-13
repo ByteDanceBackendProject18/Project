@@ -195,9 +195,9 @@ func FindCourseByID(id string) (Types.TCourse, Types.ErrNo) {
 }
 
 // FindCourseByTeacherID 根据TeacherID找到对应的课程
-func FindCourseByTeacherID(id string) ([]Types.TCourse, Types.ErrNo) {
+func FindCourseByTeacherID(id string) ([]*Types.TCourse, Types.ErrNo) {
 	var res []TCourseDao
-	var res1 []Types.TCourse
+	var res1 []*Types.TCourse
 	db, err := DBAccessor.MySqlInit()
 	defer func(db *gorm.DB) {
 		_ = db.Close()
@@ -219,7 +219,8 @@ func FindCourseByTeacherID(id string) ([]Types.TCourse, Types.ErrNo) {
 		}
 		db.Where(&TCourseDao{TeacherID: id}).Find(&res)
 		for _, course := range res {
-			res1 = append(res1, convertCourseDaoToCourse(course))
+			cse := convertCourseDaoToCourse(course)
+			res1 = append(res1, &cse)
 		}
 	}
 	return res1, 0
@@ -254,9 +255,8 @@ func UpdateTeacherIDOfCourse(courseId string, teacherID string) Types.ErrNo {
 		if res.TeacherID != "" {
 			return Types.CourseHasBound
 		}
-		res.TeacherID = teacherID
-		db.Model(&res).Updates(res)
-		return 0
+		db.Model(&res).Update(map[string]interface{}{"TeacherID": teacherID})
+		return Types.OK
 	}
 }
 
@@ -287,17 +287,17 @@ func UnbindTeacherIDOfCourse(courseId string, teacherID string) Types.ErrNo {
 			return Types.CourseNotExisted
 		}
 		if res.TeacherID == "" {
-			return Types.CourseHasBound
+			return Types.CourseNotBind
 		}
 		// 如果这个课程的教师ID与传入参数不符返回已绑定
 		if res.TeacherID != teacherID {
 			return Types.CourseHasBound
 		}
-		res.TeacherID = ""
-		db.Model(&res).Updates(res)
+		db.Model(&res).Update(map[string]interface{}{"TeacherID": ""})
 		return Types.OK
 	}
 }
+
 // UnsafeUnbindTeacherIDOfCourse 将ID对应的course的执教教师ID解绑
 func UnsafeUnbindTeacherIDOfCourse(courseId string) Types.ErrNo {
 	db, err := DBAccessor.MySqlInit()
@@ -332,6 +332,7 @@ func UnsafeUnbindTeacherIDOfCourse(courseId string) Types.ErrNo {
 		return Types.OK
 	}
 }
+
 // UnsafeUpdateCourseByID 根据CourseID更新对应课程的信息(不对是否已经绑定做检查)
 func UnsafeUpdateCourseByID(courseID string, course Types.TCourse) Types.ErrNo {
 	db, err := DBAccessor.MySqlInit()

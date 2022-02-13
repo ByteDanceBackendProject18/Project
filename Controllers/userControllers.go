@@ -47,7 +47,7 @@ func (con UserController) CreateMember(c *gin.Context) {
 		return
 	}
 
-	if UserService.CheckUserType(createMemberRequest.UserType) {
+	if !UserService.CheckUserType(createMemberRequest.UserType) {
 		createMemberResponse.Code = Types.ParamInvalid
 		createMemberResponse.Data = struct{ UserID string }{UserID: strconv.Itoa(0)}
 		c.JSON(http.StatusOK, createMemberResponse)
