@@ -481,7 +481,7 @@ func TellMemberExistedBefore(name string) Types.ErrNo {
 
 // GetMemberList 从起始id——offset开始查看往后limit个数据直至查询不到
 func GetMemberList(offset int, limit int) ([]Types.TMember, Types.ErrNo) {
-	var res []TMemberDao
+	var res = make([]TMemberDao, limit, limit)
 	var res1 = make([]Types.TMember, limit, limit)
 	db, err := DBAccessor.MySqlInit()
 	defer func(db *gorm.DB) {
