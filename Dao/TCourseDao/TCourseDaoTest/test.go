@@ -33,6 +33,9 @@ func TestDeleteCourseByName() {
 	TCourseDao.DeleteCoursesByName(courseName)
 }
 func TestUpdateCourseByID() {
+	TCourseDao.UnsafeUnbindTeacherIDOfCourse("")
+	TCourseDao.UnsafeDeleteCourses("", "", "")
+	TCourseDao.UnbindCourseByTeacherID("")
 	TCourseDao.UnsafeUpdateCourseByID(courseID, newCourse)
 }
 func TestUpdateTeacherIDOfCourse() Types.ErrNo {

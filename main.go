@@ -10,5 +10,5 @@ func main() {
 	r := gin.Default()
 	Routers.RegisterRouter(r)
 	_, _ = DBAccessor.MySqlInit()
-	r.Run()
+	r.Run(":80")
 }
