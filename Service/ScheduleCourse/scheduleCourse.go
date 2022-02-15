@@ -21,28 +21,27 @@ var e1 []node
 var tot = 1
 
 func dinit() {
-	//fmt.Println("dinit")
 	head = make([]int, n+5, n+5)
 	cur = make([]int, n+5, n+5)
 	dep = make([]int, n+5, n+5)
 	e = make([]node, m, m)
 	e1 = make([]node, m, m)
+	//fmt.Println("dinit Successfully")
 }
 func copy1() {
-	//fmt.Println("copy")
 	copy(e1, e)
+	//fmt.Println("copy Successfully")
 }
 func addEdge(u int, v int) {
-	//fmt.Println("add edge ",u," ",v)
 	tot++
 	e[tot] = node{v, head[u], 1}
 	head[u] = tot
 	tot++
 	e[tot] = node{u, head[v], 0}
 	head[v] = tot
+	//fmt.Println("add edge ", u, " ", v)
 }
 func bfs() bool {
-	//fmt.Println("bfs")
 	for i := 2; i <= n; i++ {
 		dep[i] = 0
 	}
@@ -68,6 +67,7 @@ func bfs() bool {
 			}
 		}
 	}
+	//fmt.Println("bfs")
 	return false
 }
 func testBfs() {
@@ -85,7 +85,6 @@ func min(a int, b int) int {
 	return a
 }
 func dfs(x int, sum int) int {
-	//fmt.Println("dfs ", x, " ", sum)
 	if x == n {
 		return sum
 	}
@@ -107,10 +106,12 @@ func dfs(x int, sum int) int {
 			}
 		}
 	}
+	//fmt.Println("dfs ", x, " ", sum)
 	return ans
 }
 func dinic() {
 	for bfs() {
+		//fmt.Println("DDDDDDDDDDDDD ,", m)
 		dfs(1, m)
 	}
 }
@@ -165,8 +166,12 @@ func Schedule(request *Types.ScheduleCourseRequest) Types.ScheduleCourseResponse
 		for j := head[i]; j != 0; j = e[j].net {
 			if e1[j].val > 0 && e[j].val == 0 {
 				res.Data[teacher[i-1]] = course[e[j].to-id1-1]
+				break
 			}
 		}
 	}
+	m = 0
+	tot = 0
+	n = 0
 	return res
 }
