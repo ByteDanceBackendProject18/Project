@@ -19,7 +19,6 @@ var wg sync.WaitGroup
 func (con SecKillController) SecKill(c *gin.Context) {
 	secKillRequest := &Types.BookCourseRequest{}
 	secKillResponse := &Types.BookCourseResponse{}
-
 	err := c.ShouldBindJSON(&secKillRequest)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"error": err.Error()})

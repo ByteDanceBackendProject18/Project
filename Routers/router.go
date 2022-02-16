@@ -2,6 +2,7 @@ package Routers
 
 import (
 	"Project/Controllers"
+	"Project/Dao/RedisDao"
 	"Project/Dao/TCourseDao/TCourseDaoTest"
 	"bytes"
 	"fmt"
@@ -40,6 +41,8 @@ func RegisterRouter(r *gin.Engine) {
 	g.GET("/student/course", Controllers.SecKillController{}.GetStudentCourse)
 
 	g.GET("/test", TCourseDaoTest.TCourseDaoTest{}.Test)
+
+	g.GET("/testRedis", RedisDao.RedisDaoTest{}.Test)
 }
 
 type bodyLogWriter struct {
