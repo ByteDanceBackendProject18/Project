@@ -190,7 +190,7 @@ func FindCourseByID(id string) (Types.TCourse, Types.ErrNo) {
 			}
 		}
 		db.Where(&TCourseDao{CourseID: id}).Find(&res)
-		return convertCourseDaoToCourse(res), 0
+		return convertCourseDaoToCourse(res), Types.OK
 	}
 }
 

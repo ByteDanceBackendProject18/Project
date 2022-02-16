@@ -75,7 +75,7 @@ func (con CourseController) BindCourse(c *gin.Context) {
 		c.JSON(http.StatusOK, bindCourseResponse)
 		return
 	}
-	//this := TCourseDao.MakeTCourseDao(course)
+
 	if course.TeacherID != "" {
 		bindCourseResponse.Code = Types.CourseHasBound
 		c.JSON(http.StatusOK, bindCourseResponse)
