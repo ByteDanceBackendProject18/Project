@@ -1,7 +1,7 @@
 package Controllers
 
 import (
-	TCourseDao "Project/Dao/TCourseDao"
+	"Project/Dao/TCourseDao"
 	"Project/Dao/TMemberDao"
 	"Project/Service/SecKill"
 	"Project/Types"
@@ -71,7 +71,6 @@ func (con SecKillController) SecKill(c *gin.Context) {
 	}
 
 	//课程存在，检查余量
-	//不知道余量参数，CheckResidue未实现
 	residueJudge, residue := SecKillService.CheckResidue(secKillRequest.CourseID)
 	if !residueJudge {
 		//没有余量
@@ -79,17 +78,17 @@ func (con SecKillController) SecKill(c *gin.Context) {
 		c.JSON(http.StatusOK, secKillResponse)
 		return
 	}
-
 	wg.Add(residue)
-	for i := 0; i < residue; i++ {
-		err := SecKillService.HandleSecKillWithLock(course.CourseID, curMember.UserID)
-		//抢课失败
-		if err != nil {
-			secKillResponse.Code = Types.UnknownError
-			c.JSON(http.StatusOK, secKillResponse)
-			wg.Done()
-			return
-		}
+	err3 := SecKillService.HandleSecKillWithLock(course.CourseID, curMember.UserID)
+	//抢课失败
+	if err3 != nil {
+		secKillResponse.Code = Types.CourseNotAvailable
+		c.JSON(http.StatusOK, secKillResponse)
+		wg.Done()
+		return
+	} else {
+		secKillResponse.Code = Types.OK
+		c.JSON(http.StatusOK, secKillResponse)
 	}
 	wg.Wait()
 

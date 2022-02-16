@@ -51,8 +51,18 @@ func StudentInsertCourse(userID, courseID string) {
 
 // HandleSecKill 具体操作
 func HandleSecKill(courseID string, userID string) error {
+	//检查余量
+	residue, e := CheckResidue(courseID)
+	if !residue {
+		//没有余量
+		return errors.New("HasNoCap")
+	}
+	if e > 0 {
+		StudentInsertCourse(userID, courseID)
+		CapDao.UpdateCapByCourseID(courseID, e-1)
+	}
 	//调用dao，返回error
-	return errors.New("")
+	return nil
 }
 
 // HandleSecKillWithLock 高并发锁
@@ -71,6 +81,5 @@ func CheckStudentCourse(studentID string) []Types.TCourse {
 		c, _ := TCourseDao.FindCourseByID(v)
 		courses = append(courses, c)
 	}
-
 	return courses
 }
