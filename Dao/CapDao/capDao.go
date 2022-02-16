@@ -6,9 +6,9 @@ import (
 	"Project/Types"
 	"errors"
 	"fmt"
-	"github.com/jinzhu/gorm"
-	"strconv"
 	"time"
+
+	"github.com/jinzhu/gorm"
 )
 
 type CapDao struct {
@@ -69,15 +69,15 @@ func InsertCap(courseID string, cap int) {
 }
 
 func FindCapByCourseID(courseID string) int {
-	err, redisDB := RedisAccessor.InitRedis()
-	val, _ := redisDB.Get(courseID).Result()
-	world, _ := strconv.Atoi(val)
-	if val != "" {
-		return world
-	}
-	if world == 0 {
-		return 0
-	}
+	// err, redisDB := RedisAccessor.InitRedis()
+	// val, _ := redisDB.Get(courseID).Result()
+	// world, _ := strconv.Atoi(val)
+	// if val != "" {
+	// 	return world
+	// }
+	// if world == 0 {
+	// 	return 0
+	// }
 	var res CapDao
 	db, err := DBAccessor.MySqlInit()
 	defer func(db *gorm.DB) {

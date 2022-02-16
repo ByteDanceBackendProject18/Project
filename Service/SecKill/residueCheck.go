@@ -25,30 +25,18 @@ func CheckResidue(courseID string) (int, error) {
 	return residue, nil
 }
 
-// StudentHasCourse 检查学生是否选择课程
-func StudentHasCourse(userID string, courseID string) (bool, []string) {
-	coursesList := UserCourseDao.FindUserCoursesByUserID(userID)
+// StudentHasCourse 检查学生是否已选该课程
+func StudentHasCourse(userID string, courseID string) bool {
 	//未选返回true
 	//选择返回false
-	for _, v := range coursesList {
-		if v == courseID {
-			return false, coursesList
-		}
-	}
 
-	return true, coursesList
+	return !UserCourseDao.CheckStudentCourseIsExisted(userID, courseID)
 }
 
 // StudentInsertCourse 学生增加课程
 func StudentInsertCourse(userID, courseID string) {
-	if b, courses := StudentHasCourse(userID, courseID); b {
-		if UserCourseDao.UpdateUserCoursesByCourseID(courses, userID) != Types.OK {
-			var courseIDs []string
-			UserCourseDao.InsertUserCourse(courseIDs, userID)
-		} else {
-			courses = append(courses, courseID)
-			UserCourseDao.UpdateUserCoursesByCourseID(courses, userID)
-		}
+	if StudentHasCourse(userID, courseID) {
+		UserCourseDao.InsertUserCourse(courseID, userID)
 	}
 }
 

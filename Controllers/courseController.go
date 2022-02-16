@@ -4,10 +4,11 @@ import (
 	"Project/Dao/CapDao"
 	"Project/Dao/TCourseDao"
 	"Project/Types"
-	"github.com/GUAIK-ORG/go-snowflake/snowflake"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
+
+	"github.com/GUAIK-ORG/go-snowflake/snowflake"
+	"github.com/gin-gonic/gin"
 )
 
 type CourseController struct {
@@ -37,7 +38,6 @@ func (con CourseController) CreateCourse(c *gin.Context) {
 	createCourseResponse.Code = Types.OK
 	createCourseResponse.Data = struct{ CourseID string }{CourseID: strconv.FormatInt(courseID, 10)}
 	c.JSON(http.StatusOK, createCourseResponse)
-	return
 }
 
 func (con CourseController) GetOneCourse(c *gin.Context) {
@@ -57,7 +57,6 @@ func (con CourseController) GetOneCourse(c *gin.Context) {
 	}
 	getCourseResponse.Data = course
 	c.JSON(http.StatusOK, getCourseResponse)
-	return
 }
 
 func (con CourseController) BindCourse(c *gin.Context) {
@@ -84,7 +83,6 @@ func (con CourseController) BindCourse(c *gin.Context) {
 	TCourseDao.UpdateTeacherIDOfCourse(bindCourseRequest.CourseID, bindCourseRequest.TeacherID)
 	bindCourseResponse.Code = Types.OK
 	c.JSON(http.StatusOK, bindCourseResponse)
-	return
 }
 
 func (con CourseController) UnBindCourse(c *gin.Context) {
@@ -99,7 +97,6 @@ func (con CourseController) UnBindCourse(c *gin.Context) {
 	e := TCourseDao.UnbindTeacherIDOfCourse(unbindCourseRequest.CourseID, unbindCourseRequest.TeacherID)
 	unbindCourseResponse.Code = e
 	c.JSON(http.StatusOK, unbindCourseResponse)
-	return
 }
 
 func (con CourseController) GetTeacherCourse(c *gin.Context) {
@@ -121,5 +118,4 @@ func (con CourseController) GetTeacherCourse(c *gin.Context) {
 	getTeacherCourseResponse.Code = Types.OK
 	getTeacherCourseResponse.Data = struct{ CourseList []*Types.TCourse }{CourseList: course}
 	c.JSON(http.StatusOK, getTeacherCourseResponse)
-	return
 }

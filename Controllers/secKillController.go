@@ -3,11 +3,12 @@ package Controllers
 import (
 	"Project/Dao/TCourseDao"
 	"Project/Dao/TMemberDao"
-	"Project/Service/SecKill"
+	SecKillService "Project/Service/SecKill"
 	"Project/Types"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"sync"
+
+	"github.com/gin-gonic/gin"
 )
 
 type SecKillController struct {
@@ -63,9 +64,10 @@ func (con SecKillController) SecKill(c *gin.Context) {
 	}
 
 	//学生查找学生是否选过该课程
-	hasCourse, _ := SecKillService.StudentHasCourse(secKillRequest.StudentID, secKillRequest.CourseID)
+	hasCourse := SecKillService.StudentHasCourse(secKillRequest.StudentID, secKillRequest.CourseID)
 	if !hasCourse {
 		secKillResponse.Code = Types.StudentHasCourse
+		c.JSON(http.StatusOK, secKillResponse)
 		return
 	}
 
@@ -76,29 +78,30 @@ func (con SecKillController) SecKill(c *gin.Context) {
 		c.JSON(http.StatusOK, secKillResponse)
 		return
 	}
+
 	if residue < 1 {
 		//没有余量
 		secKillResponse.Code = Types.CourseNotAvailable
 		c.JSON(http.StatusOK, secKillResponse)
 		return
 	}
+
 	wg.Add(residue)
 	err3 := SecKillService.HandleSecKillWithLock(course.CourseID, curMember.UserID)
 	//抢课失败
 	if err3 == nil {
-		secKillResponse.Code = Types.CourseNotAvailable
+		secKillResponse.Code = Types.OK
 		c.JSON(http.StatusOK, secKillResponse)
 		wg.Done()
 		return
 	} else {
-		secKillResponse.Code = Types.OK
+		secKillResponse.Code = Types.CourseNotAvailable
 		c.JSON(http.StatusOK, secKillResponse)
 	}
 	wg.Wait()
 
-	secKillResponse.Code = Types.OK
+	secKillResponse.Code = Types.CourseNotAvailable
 	c.JSON(http.StatusOK, secKillResponse)
-	return
 }
 
 // GetStudentCourse 获取学生课表
@@ -129,6 +132,4 @@ func (con SecKillController) GetStudentCourse(c *gin.Context) {
 	studentCourseResponse.Code = Types.OK
 	studentCourseResponse.Data = struct{ CourseList []Types.TCourse }{CourseList: course}
 	c.JSON(http.StatusOK, studentCourseResponse)
-	return
-
 }

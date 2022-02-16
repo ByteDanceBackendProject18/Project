@@ -5,10 +5,11 @@ import (
 	"Project/Dao/UserDao"
 	"Project/Service/UserService"
 	"Project/Types"
-	"github.com/GUAIK-ORG/go-snowflake/snowflake"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
+
+	"github.com/GUAIK-ORG/go-snowflake/snowflake"
+	"github.com/gin-gonic/gin"
 )
 
 type UserController struct {
@@ -72,7 +73,6 @@ func (con UserController) CreateMember(c *gin.Context) {
 	createMemberResponse.Code = Types.OK
 	createMemberResponse.Data = struct{ UserID string }{UserID: userID}
 	c.JSON(http.StatusOK, createMemberResponse)
-	return
 }
 
 func (con UserController) UpdateMember(c *gin.Context) {
@@ -102,7 +102,6 @@ func (con UserController) UpdateMember(c *gin.Context) {
 		updateMemberResponse.Code = Types.OK
 	}
 	c.JSON(http.StatusOK, updateMemberResponse)
-	return
 }
 
 func (con UserController) DeleteMember(c *gin.Context) {
@@ -124,7 +123,6 @@ func (con UserController) DeleteMember(c *gin.Context) {
 	e = TMemberDao.DeleteMemberByID(member.UserID)
 	deleteMemberResponse.Code = e
 	c.JSON(http.StatusOK, deleteMemberResponse)
-	return
 }
 
 func (con UserController) GetMember(c *gin.Context) {
@@ -145,7 +143,6 @@ func (con UserController) GetMember(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, getMemberResponse)
-	return
 }
 
 func (con UserController) GetMemberList(c *gin.Context) {

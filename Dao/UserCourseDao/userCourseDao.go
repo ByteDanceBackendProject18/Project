@@ -4,13 +4,14 @@ import (
 	"Project/Dao/DBAccessor"
 	"Project/Types"
 	"fmt"
-	"github.com/jinzhu/gorm"
 	"time"
+
+	"github.com/jinzhu/gorm"
 )
 
 type UserCourseDao struct {
-	CourseIDs []string `gorm:"type:varchar(128)"`
-	UserID    string   `gorm:"type:varchar(128)"`
+	UserID   string `gorm:"type:varchar(128)"`
+	CourseID string `gorm:"type:varchar(128)"`
 	gorm.Model
 }
 
@@ -42,7 +43,7 @@ func makeUserCourseTable() bool {
 	}
 }
 
-func InsertUserCourse(courseIDs []string, userID string) {
+func InsertUserCourse(courseID string, userID string) {
 	db, err := DBAccessor.MySqlInit()
 	defer func(db *gorm.DB) {
 		_ = db.Close()
@@ -61,12 +62,13 @@ func InsertUserCourse(courseIDs []string, userID string) {
 				fmt.Println("Something happened when trying to establish the table--'userCourses'.Please check the database.")
 			}
 		}
-		db.Create(&UserCourseDao{UserID: userID, CourseIDs: courseIDs})
+		db.Create(&UserCourseDao{UserID: userID, CourseID: courseID})
 	}
 }
 
 func FindUserCoursesByUserID(userID string) []string {
-	var res UserCourseDao
+	var res []UserCourseDao
+	var courses []string
 	db, err := DBAccessor.MySqlInit()
 	defer func(db *gorm.DB) {
 		_ = db.Close()
@@ -87,10 +89,13 @@ func FindUserCoursesByUserID(userID string) []string {
 		}
 		db.Where(&UserCourseDao{UserID: userID}).Find(&res)
 	}
-	return res.CourseIDs
+	for _, v := range res {
+		courses = append(courses, v.CourseID)
+	}
+	return courses
 }
 
-func UpdateUserCoursesByCourseID(courseIDs []string, userID string) Types.ErrNo {
+func CheckStudentCourseIsExisted(studentID, courseID string) bool {
 	var res UserCourseDao
 	db, err := DBAccessor.MySqlInit()
 	defer func(db *gorm.DB) {
@@ -99,7 +104,6 @@ func UpdateUserCoursesByCourseID(courseIDs []string, userID string) Types.ErrNo 
 	if err != nil {
 		fmt.Println(err)
 		fmt.Println("Database connection refused.")
-		return Types.UnknownError
 	} else {
 		// 直到建表成功才继续
 		for true {
@@ -111,15 +115,44 @@ func UpdateUserCoursesByCourseID(courseIDs []string, userID string) Types.ErrNo 
 				fmt.Println("Something happened when trying to establish the table--'userCourses'.Please check the database.")
 			}
 		}
-		db.Where(&UserCourseDao{UserID: userID}).Find(&res)
-		if res.UserID == "" {
-			return Types.UnknownError
-		}
-		res.CourseIDs = courseIDs
-		db.Save(res)
-		return Types.OK
+		db.Where(&UserCourseDao{UserID: studentID, CourseID: courseID}).Find(&res)
 	}
+	if res.CourseID != "" {
+		return true
+	}
+	return false
 }
+
+// func UpdateUserCoursesByCourseID(courseID string, userID string) Types.ErrNo {
+// 	var res UserCourseDao
+// 	db, err := DBAccessor.MySqlInit()
+// 	defer func(db *gorm.DB) {
+// 		_ = db.Close()
+// 	}(db)
+// 	if err != nil {
+// 		fmt.Println(err)
+// 		fmt.Println("Database connection refused.")
+// 		return Types.UnknownError
+// 	} else {
+// 		// 直到建表成功才继续
+// 		for true {
+// 			if makeUserCourseTable() {
+// 				break
+// 			} else {
+// 				// 如果建表失败，停4s并输出提示信息
+// 				time.Sleep(time.Duration(4))
+// 				fmt.Println("Something happened when trying to establish the table--'userCourses'.Please check the database.")
+// 			}
+// 		}
+// 		db.Where(&UserCourseDao{UserID: userID}).Find(&res)
+// 		if res.UserID == "" {
+// 			return Types.UnknownError
+// 		}
+// 		res.CourseIDs = courseIDs
+// 		db.Save(res)
+// 		return Types.OK
+// 	}
+// }
 
 func DeleteUserCoursesByCourseID(userID string) Types.ErrNo {
 	var res UserCourseDao
