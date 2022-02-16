@@ -70,8 +70,13 @@ func (con SecKillController) SecKill(c *gin.Context) {
 	}
 
 	//课程存在，检查余量
-	residueJudge, residue := SecKillService.CheckResidue(secKillRequest.CourseID)
-	if !residueJudge {
+	residue, err := SecKillService.CheckResidue(secKillRequest.CourseID)
+	if err != nil {
+		secKillResponse.Code = Types.UnknownError
+		c.JSON(http.StatusOK, secKillResponse)
+		return
+	}
+	if residue < 1 {
 		//没有余量
 		secKillResponse.Code = Types.CourseNotAvailable
 		c.JSON(http.StatusOK, secKillResponse)
@@ -80,7 +85,7 @@ func (con SecKillController) SecKill(c *gin.Context) {
 	wg.Add(residue)
 	err3 := SecKillService.HandleSecKillWithLock(course.CourseID, curMember.UserID)
 	//抢课失败
-	if err3 != nil {
+	if err3 == nil {
 		secKillResponse.Code = Types.CourseNotAvailable
 		c.JSON(http.StatusOK, secKillResponse)
 		wg.Done()

@@ -2,9 +2,12 @@ package CapDao
 
 import (
 	"Project/Dao/DBAccessor"
+	"Project/Dao/RedisAccessor"
 	"Project/Types"
+	"errors"
 	"fmt"
 	"github.com/jinzhu/gorm"
+	"strconv"
 	"time"
 )
 
@@ -66,6 +69,15 @@ func InsertCap(courseID string, cap int) {
 }
 
 func FindCapByCourseID(courseID string) int {
+	err, redisDB := RedisAccessor.InitRedis()
+	val, _ := redisDB.Get(courseID).Result()
+	world, _ := strconv.Atoi(val)
+	if val != "" {
+		return world
+	}
+	if world == 0 {
+		return 0
+	}
 	var res CapDao
 	db, err := DBAccessor.MySqlInit()
 	defer func(db *gorm.DB) {
@@ -143,4 +155,19 @@ func DeleteCapByCourseID(courseID string) Types.ErrNo {
 		db.Delete(res)
 		return Types.OK
 	}
+}
+
+//HasNoCapForRedis 没有容量redis的操作
+func HasNoCapForRedis(courseID string) error {
+	//连接redis
+	err, redisDB := RedisAccessor.InitRedis()
+	if err != nil {
+		return errors.New("fail")
+	}
+	//将没库存的courseID放入Redis
+	err = redisDB.Set(courseID, 0, 0).Err()
+	if err != nil {
+		return errors.New("fail")
+	}
+	return nil
 }

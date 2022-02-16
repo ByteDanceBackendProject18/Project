@@ -12,14 +12,17 @@ import (
 var lock = sync.Mutex{}
 
 // CheckResidue 检查余量
-func CheckResidue(courseID string) (bool, int) {
-	//不存在返回false
-	if _, e := TCourseDao.FindCourseByID(courseID); e != Types.OK {
-		return false, 0
+func CheckResidue(courseID string) (int, error) {
+	residue := CapDao.FindCapByCourseID(courseID)
+	if residue < 1 {
+		//没库存了
+		err := CapDao.HasNoCapForRedis(courseID)
+		if err != nil {
+			return 0, errors.New("fail")
+		}
 	}
-
 	//存在返回true
-	return true, CapDao.FindCapByCourseID(courseID)
+	return residue, nil
 }
 
 // StudentHasCourse 检查学生是否选择课程
@@ -52,14 +55,16 @@ func StudentInsertCourse(userID, courseID string) {
 // HandleSecKill 具体操作
 func HandleSecKill(courseID string, userID string) error {
 	//检查余量
-	residue, e := CheckResidue(courseID)
-	if !residue {
+	residue, err := CheckResidue(courseID)
+	if err != nil {
+		return errors.New("fail")
+	}
+	if residue < 1 {
 		//没有余量
 		return errors.New("HasNoCap")
-	}
-	if e > 0 {
+	} else {
 		StudentInsertCourse(userID, courseID)
-		CapDao.UpdateCapByCourseID(courseID, e-1)
+		CapDao.UpdateCapByCourseID(courseID, residue-1)
 	}
 	//调用dao，返回error
 	return nil
