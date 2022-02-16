@@ -60,7 +60,7 @@ func (con SecKillController) secKill(c *gin.Context) {
 
 	//学生查找学生是否选过该课程
 	//Todo:add args
-	hasCourse := SecKillService.StudentHasCourse("", "")
+	hasCourse, _ := SecKillService.StudentHasCourse(secKillRequest.StudentID, secKillRequest.CourseID)
 	if !hasCourse {
 		secKillResponse.Code = Types.StudentHasCourse
 		return
@@ -78,7 +78,6 @@ func (con SecKillController) secKill(c *gin.Context) {
 
 	wg.Add(residue)
 	for i := 0; i < residue; i++ {
-
 		err := SecKillService.HandleSecKillWithLock(course.CourseID, curMember.UserID)
 		//抢课失败
 		if err != nil {
