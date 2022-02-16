@@ -41,6 +41,7 @@ func makeUserCourseTable() bool {
 		return false
 	}
 }
+
 func InsertUserCourse(courseIDs []string, userID string) {
 	db, err := DBAccessor.MySqlInit()
 	defer func(db *gorm.DB) {
@@ -63,6 +64,7 @@ func InsertUserCourse(courseIDs []string, userID string) {
 		db.Create(&UserCourseDao{UserID: userID, CourseIDs: courseIDs})
 	}
 }
+
 func FindUserCoursesByUserID(userID string) []string {
 	var res UserCourseDao
 	db, err := DBAccessor.MySqlInit()
@@ -87,6 +89,7 @@ func FindUserCoursesByUserID(userID string) []string {
 	}
 	return res.CourseIDs
 }
+
 func UpdateUserCoursesByCourseID(courseIDs []string, userID string) Types.ErrNo {
 	var res UserCourseDao
 	db, err := DBAccessor.MySqlInit()
@@ -109,11 +112,15 @@ func UpdateUserCoursesByCourseID(courseIDs []string, userID string) Types.ErrNo 
 			}
 		}
 		db.Where(&UserCourseDao{UserID: userID}).Find(&res)
+		if res.UserID == "" {
+			return Types.UnknownError
+		}
 		res.CourseIDs = courseIDs
 		db.Save(res)
 		return Types.OK
 	}
 }
+
 func DeleteUserCoursesByCourseID(userID string) Types.ErrNo {
 	var res UserCourseDao
 	db, err := DBAccessor.MySqlInit()
