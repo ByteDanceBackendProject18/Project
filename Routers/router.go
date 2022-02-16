@@ -3,11 +3,14 @@ package Routers
 import (
 	"Project/Controllers"
 	"Project/Dao/TCourseDao/TCourseDaoTest"
+	"bytes"
+	"fmt"
+
 	"github.com/gin-gonic/gin"
 )
 
 func RegisterRouter(r *gin.Engine) {
-	g := r.Group("/api/v1")
+	g := r.Group("/api/v1", ginBodyLogMiddleware())
 
 	//使用session
 
@@ -37,4 +40,29 @@ func RegisterRouter(r *gin.Engine) {
 	g.GET("/student/course")
 
 	g.GET("/test", TCourseDaoTest.TCourseDaoTest{}.Test)
+}
+
+type bodyLogWriter struct {
+	gin.ResponseWriter
+	body *bytes.Buffer
+}
+
+func (w bodyLogWriter) Write(b []byte) (int, error) {
+	w.body.Write(b)
+	return w.ResponseWriter.Write(b)
+}
+
+func (w bodyLogWriter) WriteString(s string) (int, error) {
+	w.body.WriteString(s)
+	return w.ResponseWriter.WriteString(s)
+}
+
+func ginBodyLogMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		blw := &bodyLogWriter{body: bytes.NewBufferString(""), ResponseWriter: c.Writer}
+		c.Writer = blw
+		c.Next()
+
+		fmt.Println("Response body: " + blw.body.String())
+	}
 }
