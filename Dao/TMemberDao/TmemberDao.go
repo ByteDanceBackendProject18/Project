@@ -475,7 +475,7 @@ func TellMemberExistedBefore(name string) Types.ErrNo {
 		if res1.Username == "" {
 			return Types.UserNotExisted
 		}
-		return Types.OK
+		return Types.UserHasDeleted
 	}
 }
 
@@ -503,7 +503,7 @@ func GetMemberList(offset int, limit int) ([]Types.TMember, Types.ErrNo) {
 			}
 		}
 		db.Limit(limit).Offset(offset).Order("id").Find(&res)
-		for key, _ := range res {
+		for key := range res {
 			res1[key] = convertMemberDaoToMember(res[key])
 		}
 		return res1, Types.OK

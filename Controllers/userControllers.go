@@ -91,6 +91,11 @@ func (con UserController) UpdateMember(c *gin.Context) {
 		return
 	}
 
+	if !UserService.CheckNickName(updateMemberRequest.Nickname) {
+		updateMemberResponse.Code = Types.ParamInvalid
+		return
+	}
+
 	if e := TMemberDao.UpdateNickNameByID(member.UserID, updateMemberRequest.Nickname); e != Types.OK {
 		updateMemberResponse.Code = Types.UnknownError
 	} else {
@@ -133,7 +138,7 @@ func (con UserController) GetMember(c *gin.Context) {
 
 	member, e := TMemberDao.FindMemberByID(getMemberRequest.UserID)
 	if e != Types.OK {
-		getMemberResponse.Code = Types.UserNotExisted
+		getMemberResponse.Code = TMemberDao.TellMemberExistedBefore(member.Username)
 	} else {
 		getMemberResponse.Code = Types.OK
 		getMemberResponse.Data = member

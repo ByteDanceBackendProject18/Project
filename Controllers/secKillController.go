@@ -15,8 +15,8 @@ type SecKillController struct {
 
 var wg sync.WaitGroup
 
-//抢课
-func (con SecKillController) secKill(c *gin.Context) {
+// SecKill 抢课
+func (con SecKillController) SecKill(c *gin.Context) {
 	secKillRequest := &Types.BookCourseRequest{}
 	secKillResponse := &Types.BookCourseResponse{}
 
@@ -28,17 +28,22 @@ func (con SecKillController) secKill(c *gin.Context) {
 
 	//获取课程信息
 	course, e1 := TCourseDao.FindCourseByID(secKillRequest.CourseID)
-	//判断用户身份
-	cookie, err := c.Cookie("camp-session")
-	curMember, e2 := TMemberDao.FindMemberByUserName(cookie)
+	curMember, e2 := TMemberDao.FindMemberByID(secKillRequest.StudentID)
 
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"error": err.Error()})
 		return
 	}
 
-	//当前用户不是学生
-	if e2 != Types.OK || curMember.UserType != Types.Student {
+	//该ID不存在
+	if e2 != Types.OK {
+		secKillResponse.Code = TMemberDao.TellMemberExistedBefore(curMember.Username)
+		c.JSON(http.StatusOK, secKillResponse)
+		return
+	}
+
+	//该ID不是学生
+	if curMember.UserType != Types.Student {
 		secKillResponse.Code = Types.ParamInvalid
 		c.JSON(http.StatusOK, secKillResponse)
 		return
@@ -59,7 +64,6 @@ func (con SecKillController) secKill(c *gin.Context) {
 	}
 
 	//学生查找学生是否选过该课程
-	//Todo:add args
 	hasCourse, _ := SecKillService.StudentHasCourse(secKillRequest.StudentID, secKillRequest.CourseID)
 	if !hasCourse {
 		secKillResponse.Code = Types.StudentHasCourse
@@ -94,7 +98,7 @@ func (con SecKillController) secKill(c *gin.Context) {
 	return
 }
 
-//获取学生课表
+// GetStudentCourse 获取学生课表
 func (con SecKillController) GetStudentCourse(c *gin.Context) {
 	studentCourseRequest := &Types.GetStudentCourseRequest{}
 	studentCourseResponse := &Types.GetStudentCourseResponse{}
