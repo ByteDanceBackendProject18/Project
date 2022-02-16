@@ -36,8 +36,8 @@ func RegisterRouter(r *gin.Engine) {
 	g.POST("/course/schedule", Controllers.ScheCourseController{}.ScheduleCourse)
 
 	// 抢课
-	g.POST("/student/book_course")
-	g.GET("/student/course")
+	g.POST("/student/book_course", Controllers.SecKillController{}.SecKill)
+	g.GET("/student/course", Controllers.SecKillController{}.GetStudentCourse)
 
 	g.GET("/test", TCourseDaoTest.TCourseDaoTest{}.Test)
 }
