@@ -95,7 +95,7 @@ func FindUserCoursesByUserID(userID string) []string {
 	return courses
 }
 
-func CheckStudentCourseIsExisted(studentID, courseID string) bool {
+func CheckStudentCourseIsExisted(studentID string, courseID string) bool {
 	var res UserCourseDao
 	db, err := DBAccessor.MySqlInit()
 	defer func(db *gorm.DB) {
