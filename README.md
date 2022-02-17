@@ -67,4 +67,4 @@
 ```
 
 ## 项目及接口文档
-文档[](https://bytedancecampus1.feishu.cn/docs/doccnens5GECVM1l9nGaRLUEIn3)
+[https://bytedancecampus1.feishu.cn/docs/doccnens5GECVM1l9nGaRLUEIn3](文档)
