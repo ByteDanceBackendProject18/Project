@@ -154,7 +154,7 @@ func CheckStudentCourseIsExisted(studentID, courseID string) bool {
 // 	}
 // }
 
-func DeleteUserCoursesByCourseID(userID string) Types.ErrNo {
+func DeleteUserCoursesByUserID(userID string) Types.ErrNo {
 	var res UserCourseDao
 	db, err := DBAccessor.MySqlInit()
 	defer func(db *gorm.DB) {
